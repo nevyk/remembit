@@ -8,3 +8,7 @@ on:
 jobs:
   deploystub:
     name: Deployment Stub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sub Step
+        run: echo 'deployment.'
