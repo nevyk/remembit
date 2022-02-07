@@ -23,3 +23,8 @@ The following are used:
 pnpm install
 
 ```
+
+## Configs
+
+There are required configuration files before buliding the app. Informaiton on those
+can be found [here](./src/configs/README.md)
