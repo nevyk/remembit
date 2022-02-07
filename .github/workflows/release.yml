@@ -5,12 +5,17 @@ on:
 
 jobs:
   release:
-    name: Deploy
+    name: Release
     if: ${{ github.ref_type == 'branch' && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+
+      - name: Configure git
+        run: |
+          git config --global user.name "nevyk"
+          git config --global user.email "73322863+nevyk@users.noreply.github.com"
 
       - name: Install pnpm
         run: npm install -g pnpm
