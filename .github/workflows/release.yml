@@ -32,9 +32,7 @@ jobs:
       - name: Create GitHub release
         run: gh release create v$(cat package.json | jq -r .version) --notes-file CHANGELOG.md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      - name: Call Deploy Workflow
-        uses: ./.github/workflows/deploy.yml
-        with:
-          versionTag: v$(cat package.json | jq -r .version)
+      - name: Annotate Release
+        run: echo "::notice title=Version::v$(cat package.json | jq -r .version)"
