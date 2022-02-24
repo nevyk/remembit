@@ -7,9 +7,10 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Production
+    name: Production
     runs-on: ubuntu-latest
     environment: Production
+      url: https://remembit.app
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
