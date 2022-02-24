@@ -1,6 +1,6 @@
 {
   "name": "remembit",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "scripts": {
     "prepare": "husky install",
     "dev": "vite",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
+    "@semantic-release/changelog": "^6.0.1",
     "@types/node": "*",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
@@ -27,7 +28,7 @@
     "firebase-tools": "^10.1.4",
     "husky": "^7.0.0",
     "prettier": "^2.5.1",
-    "standard-version": "^9.3.2",
+    "semantic-release": "^19.0.2",
     "typescript": "^4.4.4",
     "vite": "^2.7.2",
     "vue-tsc": "^0.29.8"
