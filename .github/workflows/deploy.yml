@@ -9,7 +9,8 @@ jobs:
   deploy:
     name: Production
     runs-on: ubuntu-latest
-    environment: Production
+    environment:
+      name: Production
       url: https://remembit.app
     steps:
       - name: Checkout Code
