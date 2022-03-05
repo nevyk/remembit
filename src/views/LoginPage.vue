@@ -1,5 +1,5 @@
 <script setup lang="ts">
-//------------------------------ Imports -------------------------------------//
+// imports
 import {
   IonPage,
   IonInput,
@@ -19,9 +19,12 @@ import {
   ErrorMessage as VeeError
 } from 'vee-validate';
 import { object, string } from 'yup';
+import { useUserStore } from '../store/user';
 
-//----------------------------------------------------------------------------//
+// Get User Store
+const userStore = useUserStore();
 
+// Form data / Validation
 const email = ref('');
 const password = ref('');
 const formValidationSchema = object({
@@ -29,8 +32,8 @@ const formValidationSchema = object({
   password: string().required()
 });
 
-function handleSubmit(values: object) {
-  console.log(values);
+function handleSubmit() {
+  userStore.loginUser(email.value, password.value);
 }
 </script>
 
