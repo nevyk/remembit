@@ -27,10 +27,6 @@ import { useUserStore } from './store/user';
 // Create App and root store
 const app = createApp(App);
 const pinia = createPinia();
-
-// Load Plugins
-app.use(IonicVue);
-app.use(router);
 app.use(pinia);
 
 // Load user store
@@ -38,6 +34,10 @@ const userStore = useUserStore();
 
 // Wait for User Store to be ready
 userStore.initializeAuthListener().then(() => {
+  // Load Ionic and Router
+  app.use(IonicVue);
+  app.use(router);
+
   // Wait for router to be ready before mounting app
   router.isReady().then(() => {
     app.mount('#app');

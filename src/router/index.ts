@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import { useUserStore } from '../store/user';
 
 // Import Views (lazy load)
 const HomePage = () => import('../views/HomePage.vue');
 const LoginPage = () => import('../views/LoginPage.vue');
+const BookmarksPage = () => import('../views/BookmarksPage.vue');
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,7 +13,7 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
     path: '/',
     meta: {
-      authRequired: false
+      requiresAuth: false
     }
   },
   {
@@ -19,7 +21,15 @@ const routes: Array<RouteRecordRaw> = [
     component: LoginPage,
     path: '/login',
     meta: {
-      authRequired: true
+      requiresAuth: false
+    }
+  },
+  {
+    name: 'Bookmarks',
+    component: BookmarksPage,
+    path: '/neocortex/bookmarks',
+    meta: {
+      requiresAuth: true
     }
   }
 ];
@@ -27,6 +37,19 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+});
+
+router.beforeEach((to) => {
+  const userStore = useUserStore();
+  if (to.meta.requiresAuth) {
+    if (!userStore.isLoggedIn) {
+      return { name: 'Login' };
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
 });
 
 export default router;
