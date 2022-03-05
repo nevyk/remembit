@@ -23,7 +23,7 @@ jobs:
         run: pnpm install -r
 
       - name: Update Firebase Config
-        run: echo ${{secrets.FIREBASE_CONFIG}} | base64 -d > src/conifgs/firebase.json
+        run: echo ${{ secrets.FIREBASE_CONFIG }} | base64 -d > src/conifgs/firebase.json
 
       - name: Build
         run: pnpm run build
