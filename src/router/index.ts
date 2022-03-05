@@ -3,6 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 
 // Import Views (lazy load)
 const HomePage = () => import('../views/HomePage.vue');
+const LoginPage = () => import('../views/LoginPage.vue');
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,6 +12,14 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     meta: {
       authRequired: false
+    }
+  },
+  {
+    name: 'Login',
+    component: LoginPage,
+    path: '/login',
+    meta: {
+      authRequired: true
     }
   }
 ];
