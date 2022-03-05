@@ -13,6 +13,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    environment:
+      name: Staging
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -22,6 +24,9 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install -r
+
+      - name: Update Firebase Config
+        run: echo ${{ secrets.FIREBASE_CONFIG }} | base64 -d > src/configs/firebase.json
 
       - name: Lint
         run: pnpm run lint

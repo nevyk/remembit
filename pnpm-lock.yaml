@@ -17,6 +17,7 @@ specifiers:
   firebase: ^9.6.6
   firebase-tools: ^10.1.4
   husky: ^7.0.0
+  pinia: ^2.0.11
   prettier: ^2.5.1
   semantic-release: ^19.0.2
   typescript: ^4.4.4
@@ -31,6 +32,7 @@ dependencies:
   '@ionic/vue': 6.0.9
   '@ionic/vue-router': 6.0.9
   firebase: 9.6.6
+  pinia: 2.0.11_typescript@4.5.5+vue@3.2.29
   vee-validate: 4.5.9_vue@3.2.29
   vue: 3.2.29
   vue-router: 4.0.12_vue@3.2.29
@@ -6027,6 +6029,24 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /pinia/2.0.11_typescript@4.5.5+vue@3.2.29:
+    resolution: {integrity: sha512-JzcmnMqu28PNWOjDgEDK6fTrIzX8eQZKPPKvu/fpHdpXARUj1xeVdFi3YFIMOWswqaBd589cpmAMdSSTryI9iw==}
+    peerDependencies:
+      '@vue/composition-api': ^1.4.0
+      typescript: '>=4.4.4'
+      vue: ^2.6.14 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      '@vue/devtools-api': 6.0.12
+      typescript: 4.5.5
+      vue: 3.2.29
+      vue-demi: 0.12.1_vue@3.2.29
+    dev: false
+
   /pkg-conf/2.1.0:
     resolution: {integrity: sha1-ISZRTKbyq/69FoWW3xi6V4Z/AFg=}
     engines: {node: '>=4'}
@@ -7786,6 +7806,21 @@ packages:
       vscode-pug-languageservice: 0.29.8
       vscode-typescript-languageservice: 0.29.8
     dev: true
+
+  /vue-demi/0.12.1_vue@3.2.29:
+    resolution: {integrity: sha512-QL3ny+wX8c6Xm1/EZylbgzdoDolye+VpCXRhI2hug9dJTP3OUJ3lmiKN3CsVV3mOJKwFi0nsstbgob0vG7aoIw==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.2.29
+    dev: false
 
   /vue-eslint-parser/8.2.0_eslint@8.8.0:
     resolution: {integrity: sha512-hvl8OVT8imlKk/lQyhkshqwQQChzHETcBd5abiO4ePw7ib7QUZLfW+2TUrJHKUvFOCFRJrDin5KJO9OHzB5bRQ==}

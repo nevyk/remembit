@@ -21,15 +21,25 @@ import '@ionic/vue/css/display.css';
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+import { createPinia } from 'pinia';
+import { useUserStore } from './store/user';
 
-// Create App
+// Create App and root store
 const app = createApp(App);
+const pinia = createPinia();
 
 // Load Plugins
 app.use(IonicVue);
 app.use(router);
+app.use(pinia);
 
-// Wait for router to be ready before mounting app
-router.isReady().then(() => {
-  app.mount('#app');
+// Load user store
+const userStore = useUserStore();
+
+// Wait for User Store to be ready
+userStore.initializeAuthListener().then(() => {
+  // Wait for router to be ready before mounting app
+  router.isReady().then(() => {
+    app.mount('#app');
+  });
 });
