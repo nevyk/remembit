@@ -11,6 +11,7 @@ module.exports = {
   rules: {
     // override/add rules settings here, such as:
     // 'vue/no-unused-vars': 'error'
+    'vue/no-deprecated-slot-attribute': 'off'
   },
   parser: 'vue-eslint-parser',
   parserOptions: {
