@@ -73,9 +73,9 @@ function handleSubmit() {
                 inputmode="email"
                 placeholder="Email Address"
                 autocomplete="email"
-                :validateOnChange="noValidate"
-                :validateOnBlur="noValidate"
-                :validateOnModelUpdate="noValidate"
+                :validate-on-change="false"
+                :validate-on-blur="false"
+                :validate-on-model-update="false"
               >
               </VeeField>
             </ion-item>

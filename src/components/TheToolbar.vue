@@ -32,7 +32,11 @@ function handleLogout() {
       <ion-button id="avatar-button" slot="icon-only" shape="round"
         ><ion-icon :icon="personCircleOutline" size="large"></ion-icon
       ></ion-button>
-      <ion-popover trigger="avatar-button" show-backdrop="false">
+      <ion-popover
+        trigger="avatar-button"
+        :show-backdrop="false"
+        :dismiss-on-select="true"
+      >
         <ion-list>
           <ion-item id="logout-button" button lines="none" @click="handleLogout">
             <ion-icon slot="start" :icon="logOutOutline"></ion-icon>
