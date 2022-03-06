@@ -10,7 +10,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonButton,
-  IonText
+  IonText,
+  IonLoading
 } from '@ionic/vue';
 import { ref } from 'vue';
 import {
@@ -41,10 +42,18 @@ const noValidate = false;
 const loginForm = ref<any>();
 
 function handleSubmit() {
+  toggleIsLoading();
   userStore.loginUser(email.value, password.value).then(() => {
     loginForm.value.resetForm();
+    toggleIsLoading();
     router.push({ name: 'Bookmarks' });
   });
+}
+
+const isLoading = ref(false);
+
+function toggleIsLoading() {
+  isLoading.value = !isLoading.value;
 }
 </script>
 
@@ -113,6 +122,11 @@ function handleSubmit() {
           </VeeForm>
         </ion-card-content>
       </ion-card>
+      <ion-loading
+        id="submitting-indicator"
+        :is-open="isLoading"
+        message="Logging in..."
+      ></ion-loading>
     </div>
   </ion-page>
 </template>
