@@ -20,9 +20,13 @@ import {
 } from 'vee-validate';
 import { object, string } from 'yup';
 import { useUserStore } from '../store/user';
+import { useRouter } from 'vue-router';
 
 // Get User Store
 const userStore = useUserStore();
+
+// Get Router
+const router = useRouter();
 
 // Form data / Validation
 const email = ref('');
@@ -31,9 +35,16 @@ const formValidationSchema = object({
   email: string().required().email(),
   password: string().required()
 });
+const noValidate = false;
+
+// Template Refs
+const loginForm = ref<any>();
 
 function handleSubmit() {
-  userStore.loginUser(email.value, password.value);
+  userStore.loginUser(email.value, password.value).then(() => {
+    loginForm.value.resetForm();
+    router.push({ name: 'Bookmarks' });
+  });
 }
 </script>
 
@@ -47,6 +58,7 @@ function handleSubmit() {
         <ion-card-content>
           <VeeForm
             id="login-form"
+            ref="loginForm"
             :validation-schema="formValidationSchema"
             @submit="handleSubmit"
           >
@@ -60,10 +72,10 @@ function handleSubmit() {
                 form="login-form"
                 inputmode="email"
                 placeholder="Email Address"
-                type="email"
                 autocomplete="email"
-                validate-on-blur
-                debounce="300"
+                :validateOnChange="noValidate"
+                :validateOnBlur="noValidate"
+                :validateOnModelUpdate="noValidate"
               >
               </VeeField>
             </ion-item>
@@ -82,8 +94,9 @@ function handleSubmit() {
                 placeholder="Password"
                 type="password"
                 autocomplete="current-password"
-                validate-on-blur
-                debounce="300"
+                :validateOnChange="noValidate"
+                :validateOnBlur="noValidate"
+                :validateOnModelUpdate="noValidate"
               >
               </VeeField>
             </ion-item>
