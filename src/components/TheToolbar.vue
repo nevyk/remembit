@@ -39,8 +39,12 @@ function handleLogout() {
       >
         <ion-list>
           <ion-item id="logout-button" button lines="none" @click="handleLogout">
-            <ion-icon slot="start" :icon="logOutOutline"></ion-icon>
-            <ion-label>Logout</ion-label>
+            <ion-icon
+              class="ion-margin-end"
+              size="small"
+              :icon="logOutOutline"
+            ></ion-icon>
+            <ion-label><p>Logout</p></ion-label>
           </ion-item>
         </ion-list>
       </ion-popover>
