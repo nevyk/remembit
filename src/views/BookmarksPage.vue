@@ -2,7 +2,6 @@
 import TheToolbar from '../components/TheToolbar.vue';
 import {
   IonPage,
-  IonHeader,
   IonItem,
   IonList,
   IonLabel,
@@ -31,11 +30,9 @@ function handleEdit() {
     <ion-split-pane content-id="main-content">
       <!--  the side menu  -->
       <ion-menu content-id="main">
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Tags</ion-title>
-          </ion-toolbar>
-        </ion-header>
+        <ion-toolbar>
+          <ion-title>Tags</ion-title>
+        </ion-toolbar>
         <ion-content>
           <ion-list lines="none">
             <ion-item
@@ -51,25 +48,27 @@ function handleEdit() {
       </ion-menu>
 
       <ion-content id="main-content">
-        <ion-header><TheToolbar></TheToolbar></ion-header>
-        <!-- Bookmark List -->
-        <ion-list>
-          <ion-item
-            v-for="bookmark in bookmarkStore.bookmarks"
-            :key="bookmark.id"
-            :href="bookmark.url"
-            target="_blank"
-            rel="noopener"
-          >
-            <ion-label>{{ bookmark.name }}</ion-label>
-            <ion-button fill="clear" color="primary" @click.prevent="handleEdit">
-              <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" color="danger" @click.prevent="handleEdit">
-              <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </ion-list>
+        <TheToolbar></TheToolbar>
+        <ion-content>
+          <!-- Bookmark List -->
+          <ion-list>
+            <ion-item
+              v-for="bookmark in bookmarkStore.bookmarks"
+              :key="bookmark.id"
+              :href="bookmark.url"
+              target="_blank"
+              rel="noopener"
+            >
+              <ion-label>{{ bookmark.name }}</ion-label>
+              <ion-button fill="clear" color="primary" @click.prevent="handleEdit">
+                <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" @click.prevent="handleEdit">
+                <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-content>
       </ion-content>
     </ion-split-pane>
   </ion-page>
