@@ -15,32 +15,11 @@ import {
   IonToolbar
 } from '@ionic/vue';
 import { pencilOutline, trashOutline, pricetagsOutline } from 'ionicons/icons';
-import { ref, reactive, computed } from 'vue';
+import { useBookmarks } from '../store/bookmarks';
 
-const tags = computed(() => {
-  const prefix = 'tag';
-  let tagArray = [];
-
-  for (let t = 1; t < 30; t++) {
-    tagArray.push(`${prefix}${t}`);
-  }
-  return tagArray;
-});
-
-const data = reactive([
-  {
-    id: 'jf38014jnfjkn094n2v',
-    name: 'GitHub',
-    url: 'https://github.com',
-    tags: ['tag1', 'tag2']
-  },
-  {
-    id: 'jf3803injkenv0837hvle',
-    name: 'DuckDuckGo',
-    url: 'https://start.duckduckgo.com',
-    tags: ['search', 'personal']
-  }
-]);
+const bookmarkStore = useBookmarks();
+bookmarkStore.generateFakeBookmarks();
+bookmarkStore.generateFakeTags();
 
 function handleEdit() {
   console.log('edit button clicked.');
@@ -59,7 +38,12 @@ function handleEdit() {
         </ion-header>
         <ion-content>
           <ion-list lines="none">
-            <ion-item v-for="tag in tags" :key="tag" :detail="false" button>
+            <ion-item
+              v-for="tag in bookmarkStore.allTags"
+              :key="tag"
+              :detail="false"
+              button
+            >
               <ion-label>{{ tag }}</ion-label>
             </ion-item>
           </ion-list>
@@ -71,7 +55,7 @@ function handleEdit() {
         <!-- Bookmark List -->
         <ion-list>
           <ion-item
-            v-for="bookmark in data"
+            v-for="bookmark in bookmarkStore.bookmarks"
             :key="bookmark.id"
             :href="bookmark.url"
             target="_blank"
