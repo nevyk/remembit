@@ -4,9 +4,10 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "vite",
+    "firebase-functions-watch": "pnpm run --dir functions build -- -w",
+    "firebase-emulators": "pnpm exec firebase emulators:start",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "emulator": "pnpm exec firebase emulators:start",
     "lint": "eslint --ext .js,.vue,.ts --fix src",
     "release": "semantic-release"
   },
@@ -14,6 +15,8 @@
     "@ionic/vue": "^6.0.9",
     "@ionic/vue-router": "^6.0.9",
     "firebase": "^9.6.6",
+    "just-merge": "^3.0.1",
+    "just-pick": "^4.0.1",
     "pinia": "^2.0.11",
     "vee-validate": "^4.5.9",
     "vue": "^3.2.25",
@@ -23,7 +26,6 @@
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
-    "@faker-js/faker": "^6.0.0-beta.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@types/node": "*",

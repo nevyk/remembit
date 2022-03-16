@@ -1,46 +1,104 @@
 import { defineStore } from 'pinia';
-import faker from '@faker-js/faker';
+import { useUserStore } from './user';
+import { db } from '../services/firebase';
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  doc,
+  deleteDoc
+} from 'firebase/firestore';
+import merge from 'just-merge';
+import pick from 'just-pick';
 
 interface Bookmark {
   id: string;
   name: string;
   url: string;
   tags: Array<string>;
+  created: string;
+  updated: string;
 }
 
 interface BookmarksState {
   bookmarks: Array<Bookmark>;
-  allTags: Array<string>;
 }
+
+interface BookmarkNew {
+  name: string;
+  url: string;
+  tags: Array<string>;
+}
+
+const bookmarksDb = collection(db, 'bookmarks');
+const userStore = useUserStore();
 
 export const useBookmarks = defineStore('bookmarks', {
   state: (): BookmarksState => {
     return {
-      bookmarks: [],
-      allTags: []
+      bookmarks: []
     };
   },
 
   actions: {
-    generateFakeBookmarks() {
-      for (let b = 0; b < 29; b++) {
-        const bookmark: Bookmark = {
-          id: faker.random.alphaNumeric(10),
-          name: faker.random.words(2),
-          url: faker.internet.url(),
-          tags: [faker.datatype.string(5), faker.datatype.string(5)]
-        };
+    initializeBookmarksListner() {
+      const bookmarksQuery = query(bookmarksDb, where('owner', '==', userStore.uid));
+      return onSnapshot(bookmarksQuery, (snapshot) => {
+        this.bookmarks = snapshot.docs.map((doc) => {
+          const bookmark: Bookmark = {
+            id: doc.id,
+            name: doc.data().name,
+            url: doc.data().url,
+            tags: doc.data().tags,
+            created: doc.data().created,
+            updated: doc.data().updated
+          };
 
-        this.bookmarks.push(bookmark);
-      }
+          return bookmark;
+        });
+      });
     },
 
-    generateFakeTags() {
-      for (let t = 0; t < 29; t++) {
-        this.allTags.push(faker.word.noun());
-      }
+    createBookmark(newBookmark: BookmarkNew) {
+      return addDoc(bookmarksDb, merge(newBookmark, { owner: userStore.uid }));
+    },
+
+    updateBookmark(bookmarkUpdate: Bookmark) {
+      const updates = pick(bookmarkUpdate, ['name', 'url', 'tags']);
+      return updateDoc(doc(bookmarksDb, bookmarkUpdate.id), updates);
+    },
+
+    deleteBookmark(bookmark: Bookmark) {
+      return deleteDoc(doc(bookmarksDb, bookmark.id));
+    },
+
+    getByTag(tag: string) {
+      return this.bookmarks.filter((bookmark) => {
+        return bookmark.tags.includes(tag);
+      });
     }
   },
 
-  getters: {}
+  getters: {
+    allTags: (state) => {
+      const tagList: Array<string> = [];
+
+      state.bookmarks.forEach((bookmark) => {
+        bookmark.tags.forEach((tag) => {
+          tagList.includes(tag) ? true : tagList.push(tag);
+        });
+      });
+
+      return tagList;
+    },
+
+    untaggedBookmarks: (state) => {
+      return state.bookmarks.filter((bookmark) => {
+        return bookmark.tags.length === 0;
+      });
+    }
+  }
 });

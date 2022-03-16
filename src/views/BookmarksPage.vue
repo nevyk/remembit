@@ -11,17 +11,22 @@ import {
   IonSplitPane,
   IonMenu,
   IonTitle,
-  IonToolbar
+  IonToolbar,
+  IonFab,
+  IonFabButton
 } from '@ionic/vue';
-import { pencilOutline, trashOutline, pricetagsOutline } from 'ionicons/icons';
+import { pencilOutline, trashOutline, addOutline } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
 
 const bookmarkStore = useBookmarks();
-bookmarkStore.generateFakeBookmarks();
-bookmarkStore.generateFakeTags();
+bookmarkStore.initializeBookmarksListner();
 
-function handleEdit() {
-  console.log('edit button clicked.');
+function handleAdd() {
+  bookmarkStore.createBookmark({
+    name: 'GitHub',
+    url: 'https://github.com',
+    tags: ['code']
+  });
 }
 </script>
 
@@ -29,7 +34,7 @@ function handleEdit() {
   <ion-page>
     <ion-split-pane content-id="main-content">
       <!--  the side menu  -->
-      <ion-menu content-id="main">
+      <ion-menu content-id="main-content">
         <ion-toolbar>
           <ion-title>Tags</ion-title>
         </ion-toolbar>
@@ -60,10 +65,10 @@ function handleEdit() {
               rel="noopener"
             >
               <ion-label>{{ bookmark.name }}</ion-label>
-              <ion-button fill="clear" color="primary" @click.prevent="handleEdit">
+              <ion-button fill="clear" color="primary">
                 <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
               </ion-button>
-              <ion-button fill="clear" color="danger" @click.prevent="handleEdit">
+              <ion-button fill="clear" color="danger">
                 <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
               </ion-button>
             </ion-item>
@@ -71,6 +76,11 @@ function handleEdit() {
         </ion-content>
       </ion-content>
     </ion-split-pane>
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button @click="handleAdd">
+        <ion-icon :icon="addOutline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </ion-page>
 </template>
 

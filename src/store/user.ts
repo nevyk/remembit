@@ -5,6 +5,7 @@ interface UserState {
   isLoggedIn: boolean;
   name: string | null;
   email: string | null;
+  uid: string | null;
 }
 
 export const useUserStore = defineStore('user', {
@@ -12,18 +13,20 @@ export const useUserStore = defineStore('user', {
     return {
       isLoggedIn: false,
       name: null,
-      email: null
+      email: null,
+      uid: null
     };
   },
   actions: {
     initializeAuthListener() {
       return new Promise((resolve) => {
-        auth.onAuthStateChanged((user) => {
-          if (user) {
+        auth.onAuthStateChanged((firebaseUser) => {
+          if (firebaseUser) {
             // Map Firebase user to userState
             this.isLoggedIn = true;
-            this.name = user.displayName;
-            this.email = user.email;
+            this.name = firebaseUser.displayName;
+            this.email = firebaseUser.email;
+            this.uid = firebaseUser.uid;
           } else {
             // Clear State on logout
             this.$reset();
