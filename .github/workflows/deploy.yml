@@ -11,6 +11,7 @@ on:
 jobs:
   staging:
     name: Staging
+    if: github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == 'main'
     uses: ./.github/workflows/reusable_deploy.yml
     with:
       environment: Staging
@@ -18,6 +19,7 @@ jobs:
 
   production:
     name: Production
+    if: github.event_name == 'release'
     uses: ./.github/workflows/reusable_deploy.yml
     with:
       environment: Production
