@@ -13,25 +13,34 @@ import {
   IonTitle,
   IonToolbar,
   IonFab,
-  IonFabButton
+  IonFabButton,
+  modalController
 } from '@ionic/vue';
 import { pencilOutline, trashOutline, addOutline } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
+import BookmarksModalNew from '../components/BookmarksModalNew.vue';
+import { ref } from 'vue';
 
+// component refs
+const bookmarksPage = ref<HTMLElement>();
+
+// bookmarks store
 const bookmarkStore = useBookmarks();
 bookmarkStore.initializeBookmarksListner();
 
-function handleAdd() {
-  bookmarkStore.createBookmark({
-    name: 'GitHub',
-    url: 'https://github.com',
-    tags: ['code']
+// new bookmark modal
+async function showNewBookmarkModal() {
+  const modal = await modalController.create({
+    component: BookmarksModalNew,
+    presentingElement: bookmarksPage.value
   });
+
+  return modal.present();
 }
 </script>
 
 <template>
-  <ion-page>
+  <ion-page id="bookmarks-page" ref="bookmarksPage">
     <ion-split-pane content-id="main-content">
       <!--  the side menu  -->
       <ion-menu content-id="main-content">
@@ -76,8 +85,13 @@ function handleAdd() {
         </ion-content>
       </ion-content>
     </ion-split-pane>
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button @click="handleAdd">
+    <ion-fab
+      slot="fixed"
+      vertical="bottom"
+      horizontal="end"
+      @click="showNewBookmarkModal"
+    >
+      <ion-fab-button>
         <ion-icon :icon="addOutline"></ion-icon>
       </ion-fab-button>
     </ion-fab>

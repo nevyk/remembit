@@ -14,6 +14,8 @@ import {
 import merge from 'just-merge';
 import pick from 'just-pick';
 
+export { BookmarkNew, useBookmarks };
+
 interface Bookmark {
   id: string;
   name: string;
@@ -36,7 +38,7 @@ interface BookmarkNew {
 const bookmarksDb = collection(db, 'bookmarks');
 const userStore = useUserStore();
 
-export const useBookmarks = defineStore('bookmarks', {
+const useBookmarks = defineStore('bookmarks', {
   state: (): BookmarksState => {
     return {
       bookmarks: []
