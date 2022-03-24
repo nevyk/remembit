@@ -9,6 +9,13 @@ on:
       environment_url:
         type: string
         required: true
+    secrets:
+      FIREBASE_CONFIG:
+        required: true
+      FIREBASE_PROJECT_ID:
+        required: true
+      FIREBASE_TOKEN:
+        required: true
 
 jobs:
   deploy:
