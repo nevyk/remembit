@@ -28,3 +28,7 @@ jobs:
     with:
       environment: Production
       environment_url: https://remembit.app
+    secrets:
+      FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
