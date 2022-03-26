@@ -19,6 +19,7 @@ import {
 import { pencilOutline, trashOutline, addOutline } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
 import BookmarksModalNew from '../components/BookmarksModalNew.vue';
+import BookmarksModalEdit from '../components/BookmarksModalEdit.vue';
 import { ref } from 'vue';
 
 // component refs
@@ -32,6 +33,19 @@ bookmarkStore.initializeBookmarksListner();
 async function showNewBookmarkModal() {
   const modal = await modalController.create({
     component: BookmarksModalNew,
+    presentingElement: bookmarksPage.value
+  });
+
+  return modal.present();
+}
+
+// edit bookmark modal
+async function showEditBookmarkModal(id: string) {
+  const modal = await modalController.create({
+    component: BookmarksModalEdit,
+    componentProps: {
+      bookmarkId: id
+    },
     presentingElement: bookmarksPage.value
   });
 
@@ -74,10 +88,20 @@ async function showNewBookmarkModal() {
               rel="noopener"
             >
               <ion-label>{{ bookmark.name }}</ion-label>
-              <ion-button fill="clear" color="primary">
+              <ion-button
+                fill="clear"
+                color="primary"
+                type="button"
+                @click.stop.prevent="showEditBookmarkModal(bookmark.id)"
+              >
                 <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
               </ion-button>
-              <ion-button fill="clear" color="danger">
+              <ion-button
+                fill="clear"
+                color="danger"
+                type="button"
+                @click.stop.prevent="bookmarkStore.deleteBookmark(bookmark)"
+              >
                 <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
               </ion-button>
             </ion-item>
@@ -85,13 +109,8 @@ async function showNewBookmarkModal() {
         </ion-content>
       </ion-content>
     </ion-split-pane>
-    <ion-fab
-      slot="fixed"
-      vertical="bottom"
-      horizontal="end"
-      @click="showNewBookmarkModal"
-    >
-      <ion-fab-button>
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button @click="showNewBookmarkModal()">
         <ion-icon :icon="addOutline"></ion-icon>
       </ion-fab-button>
     </ion-fab>

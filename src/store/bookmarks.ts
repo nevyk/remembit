@@ -13,8 +13,9 @@ import {
 } from 'firebase/firestore';
 import merge from 'just-merge';
 import pick from 'just-pick';
+import clone from 'just-clone';
 
-export { BookmarkNew, useBookmarks };
+export { BookmarkNew, Bookmark, useBookmarks };
 
 interface Bookmark {
   id: string;
@@ -81,6 +82,25 @@ const useBookmarks = defineStore('bookmarks', {
       return this.bookmarks.filter((bookmark) => {
         return bookmark.tags.includes(tag);
       });
+    },
+
+    getById(id: string): Bookmark {
+      const result = this.bookmarks.find((bookmark) => {
+        return bookmark.id === id;
+      });
+
+      if (result) {
+        return clone(result);
+      } else {
+        return {
+          id: '',
+          name: '',
+          url: '',
+          tags: [],
+          created: '',
+          updated: ''
+        };
+      }
     }
   },
 

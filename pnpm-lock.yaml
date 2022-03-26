@@ -17,6 +17,7 @@ specifiers:
   firebase: ^9.6.6
   firebase-tools: ^10.1.4
   husky: ^7.0.0
+  just-clone: ^5.0.1
   just-merge: ^3.0.1
   just-pick: ^4.0.1
   pinia: ^2.0.11
@@ -34,6 +35,7 @@ dependencies:
   '@ionic/vue': 6.0.11
   '@ionic/vue-router': 6.0.11
   firebase: 9.6.8
+  just-clone: 5.0.1
   just-merge: 3.0.1
   just-pick: 4.0.1
   pinia: 2.0.11_typescript@4.6.2+vue@3.2.31
@@ -4905,6 +4907,10 @@ packages:
       pako: 1.0.11
       readable-stream: 2.3.7
       set-immediate-shim: 1.0.1
+    dev: false
+
+  /just-clone/5.0.1:
+    resolution: {integrity: sha512-y6hFQ8X4fhJTZzdNvrE9mnCQX33uN4xV0hZ+5WNgs6yCcrRzs9ieFXuYRKznWqQ/gOSZpJu0yQ6hRHLCU6ezyw==}
     dev: false
 
   /just-merge/3.0.1:
