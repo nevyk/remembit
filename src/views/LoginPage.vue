@@ -39,14 +39,16 @@ const formValidationSchema = object({
 const noValidate = false;
 
 // Template Refs
-const loginForm = ref<any>();
+const loginForm = ref<InstanceType<typeof HTMLFormElement>>();
 
 function handleSubmit() {
   toggleIsLoading();
   userStore.loginUser(email.value, password.value).then(() => {
-    loginForm.value.resetForm();
-    toggleIsLoading();
-    router.push({ name: 'Bookmarks' });
+    if (loginForm.value) {
+      loginForm.value.resetForm();
+      toggleIsLoading();
+      router.push({ name: 'Bookmarks' });
+    }
   });
 }
 
@@ -103,9 +105,9 @@ function toggleIsLoading() {
                 placeholder="Password"
                 type="password"
                 autocomplete="current-password"
-                :validateOnChange="noValidate"
-                :validateOnBlur="noValidate"
-                :validateOnModelUpdate="noValidate"
+                :validate-on-change="noValidate"
+                :validate-on-blur="noValidate"
+                :validate-on-model-update="noValidate"
               >
               </VeeField>
             </ion-item>

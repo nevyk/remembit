@@ -14,37 +14,43 @@ import {
   IonText
 } from '@ionic/vue';
 import { closeCircleOutline } from 'ionicons/icons';
-import { BookmarkNew, useBookmarks } from '../store/bookmarks';
-import { reactive } from 'vue';
+import { useBookmarks } from '../store/bookmarks';
+import { reactive, defineProps } from 'vue';
 import { useBookmarkFormFields } from '../composables/bookmarkFormFields';
+
+// props
+const props = defineProps({
+  bookmarkId: {
+    type: String,
+    required: true
+  }
+});
 
 // bookmarks store
 const bookmarksStore = useBookmarks();
 
-// new bookmark skeleton
-const newBookmark: BookmarkNew = reactive({
-  name: '',
-  url: '',
-  tags: []
-});
+// local copy of bookmark
+const bookmark = reactive(bookmarksStore.getById(props.bookmarkId));
 
-// new bookmark form
-const newBookmarkForm = useBookmarkFormFields();
+// new bookmark form and set initial values
+const bookmarkForm = useBookmarkFormFields();
+bookmarkForm.bookmarkName.value = bookmark.name;
+bookmarkForm.bookmarkUrl.value = bookmark.url;
 
-// new bookmark tags functions
+// tags functions
 async function pushTag() {
-  await newBookmarkForm.validatebookmarkTag();
+  await bookmarkForm.validatebookmarkTag();
   if (
-    newBookmarkForm.bookmarkTag.value &&
-    !newBookmark.tags.includes(newBookmarkForm.bookmarkTag.value)
+    bookmarkForm.bookmarkTag.value &&
+    !bookmark.tags.includes(bookmarkForm.bookmarkTag.value)
   ) {
-    newBookmark.tags.push(newBookmarkForm.bookmarkTag.value);
-    newBookmarkForm.resetbookmarkTag();
+    bookmark.tags.push(bookmarkForm.bookmarkTag.value);
+    bookmarkForm.resetbookmarkTag();
   }
 }
 
 function removeTag(tagIndex: number) {
-  newBookmark.tags.splice(tagIndex, 1);
+  bookmark.tags.splice(tagIndex, 1);
 }
 
 // modal controls
@@ -53,8 +59,8 @@ function closeModal() {
 }
 
 async function validateForm() {
-  const nameIsValid = (await newBookmarkForm.validatebookmarkName()).valid;
-  const urlIsValid = (await newBookmarkForm.validatebookmarkUrl()).valid;
+  const nameIsValid = (await bookmarkForm.validatebookmarkName()).valid;
+  const urlIsValid = (await bookmarkForm.validatebookmarkUrl()).valid;
 
   if (nameIsValid && urlIsValid) {
     return true;
@@ -66,11 +72,11 @@ async function validateForm() {
 async function submit() {
   const formIsValid = await validateForm();
 
-  newBookmark.name = newBookmarkForm.bookmarkName.value;
-  newBookmark.url = newBookmarkForm.bookmarkUrl.value;
+  bookmark.name = bookmarkForm.bookmarkName.value;
+  bookmark.url = bookmarkForm.bookmarkUrl.value;
 
   if (formIsValid) {
-    bookmarksStore.createBookmark(newBookmark).then(() => {
+    bookmarksStore.updateBookmark(bookmark).then(() => {
       closeModal();
     });
   }
@@ -79,7 +85,7 @@ async function submit() {
 
 <template>
   <ion-toolbar id="new-bookmark-toolbar">
-    <ion-title id="new-bookmark-title">New Bookmark</ion-title>
+    <ion-title id="new-bookmark-title">Edit Bookmark</ion-title>
   </ion-toolbar>
   <ion-content class="ion-padding">
     <form id="new-bookmark-form">
@@ -87,12 +93,12 @@ async function submit() {
         <ion-label id="bookmark-name-label" position="floating">Name</ion-label>
         <ion-input
           id="bookmark-name-input"
-          v-model.trim="newBookmarkForm.bookmarkName.value"
+          v-model.trim="bookmarkForm.bookmarkName.value"
           placeholder="Bookmark Name"
         ></ion-input>
         <span id="bookmark-name-error-container">
           <ion-text id="bookmark-name-error" color="danger" class="error-text">{{
-            newBookmarkForm.bookmarkNameError.value
+            bookmarkForm.bookmarkNameError.value
           }}</ion-text>
         </span>
       </ion-item>
@@ -101,12 +107,12 @@ async function submit() {
         <ion-label id="bookmark-url-label" position="floating">Url</ion-label>
         <ion-input
           id="bookmark-url-input"
-          v-model.trim="newBookmarkForm.bookmarkUrl.value"
+          v-model.trim="bookmarkForm.bookmarkUrl.value"
           placeholder="Bookmark Url"
         ></ion-input>
         <span id="bookmark-url-error-container">
           <ion-text id="bookmark-url-error" color="danger" class="error-text">{{
-            newBookmarkForm.bookmarkUrlError.value
+            bookmarkForm.bookmarkUrlError.value
           }}</ion-text>
         </span>
       </ion-item>
@@ -115,20 +121,20 @@ async function submit() {
         <ion-label id="bookmark-tag-label" position="floating">Tag</ion-label>
         <ion-input
           id="bookmark-tag-input"
-          v-model.trim="newBookmarkForm.bookmarkTag.value"
+          v-model.trim="bookmarkForm.bookmarkTag.value"
           placeholder="Add Tag"
           @keyup.enter="pushTag"
         ></ion-input>
         <span id="bookmark-tag-error-container">
           <ion-text id="bookmark-tag-error" color="danger" class="error-text">{{
-            newBookmarkForm.bookmarkTagError.value
+            bookmarkForm.bookmarkTagError.value
           }}</ion-text>
         </span>
       </ion-item>
     </form>
     <ion-item id="tag-list-container" lines="none">
       <ion-chip
-        v-for="(tag, tagIndex) in newBookmark.tags"
+        v-for="(tag, tagIndex) in bookmark.tags"
         id="tag"
         :key="tagIndex"
         color="primary"
@@ -144,9 +150,7 @@ async function submit() {
   </ion-content>
   <ion-toolbar id="footer-buttons">
     <ion-buttons id="button-submit-container" slot="primary">
-      <ion-button id="button-submit" color="primary" @click="submit()"
-        >Create Bookmark</ion-button
-      >
+      <ion-button id="button-submit" color="primary" @click="submit()">Submit</ion-button>
     </ion-buttons>
     <ion-buttons id="button-cancel-container" slot="secondary">
       <ion-button id="button-cancel" color="danger" @click="closeModal()"
