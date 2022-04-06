@@ -15,18 +15,18 @@ const users = admin.firestore().collection('users');
 const onCreate = functions.auth.user().onCreate(async (user) => {
   try {
     // create user document
-    console.log('creating user document');
+    functions.logger.info('creating user document');
     await users.doc(user.uid).create({
       bookmarksTotal: 0,
     });
   } catch (err) {
-    console.log(err);
+    functions.logger.error(err);
   }
 });
 
 const onDelete = functions.auth.user().onDelete((user) => {
   // delete user document
-  console.log('deleting user document');
+  functions.logger.info('deleting user document');
   return users.doc(user.uid).delete();
 });
 

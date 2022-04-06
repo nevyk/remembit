@@ -10,9 +10,8 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "rootDirs": ["./src"]
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": ["src"]
 }

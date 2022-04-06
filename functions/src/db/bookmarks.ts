@@ -5,6 +5,7 @@ import isEmpty from 'just-is-empty';
 //@ts-ignore
 import compare from 'just-compare';
 import { recordEvent, isDuplicateEvent } from './utils.js';
+import { CloudTasksClient } from '@google-cloud/tasks';
 
 // handle firebase admin sdk
 try {
@@ -16,10 +17,21 @@ try {
 // db references
 const users = admin.firestore().collection('users');
 
+// configs
+const cleanupEnabled =
+  process.env.REMEMBIT_EVENT_CLEANUP_ENABLED === 'true' ? true : false;
+const gcpProjectId = process.env.REMEMBIT_GCP_PROJECT_ID;
+const gcpTasksQueueName = process.env.REMEMBIT_GCP_TASKS_QUEUE;
+const gcpTasksRegion = process.env.REMEMBIT_GCP_TASKS_REGION;
+const firebaseProjectId = process.env.REMEMBIT_FIREBASE_PROJECT_ID;
+const firebaseFunctionRegion = process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION;
+
 // handlers
 const onCreate = functions.firestore
   .document('bookmarks/{bookmarkId}')
   .onCreate(async (snapshot, context) => {
+    functions.logger.log(process.env);
+
     // get existing data
     const bookmark = await snapshot.ref.get();
     const bookmarkData = bookmark.data();
@@ -31,25 +43,25 @@ const onCreate = functions.firestore
 
       // check if bookmark already has timestamps; if not, add them
       if (!isEmpty(bookmarkTimestamps)) {
-        console.log('bookmark already has timestamps, exiting.');
+        functions.logger.info('bookmark already has timestamps, exiting.');
         return true;
       } else {
         // add timestamps to bookmark
-        console.log('adding timestamps to new bookmark.');
+        functions.logger.info('adding timestamps to new bookmark.');
         await snapshot.ref.update({
           created: context.timestamp,
           updated: context.timestamp,
         });
 
         // increment user's bookmark count
-        console.log('updating bookmark count of user.');
+        functions.logger.info('updating bookmark count of user.');
         // @ts-ignore
         return users.doc(snapshot.data().owner).update({
           bookmarksTotal: admin.firestore.FieldValue.increment(1),
         });
       }
     } else {
-      console.error('create bookmark event has no document data');
+      functions.logger.error('create bookmark eventP has no document data');
       return false;
     }
   });
@@ -62,12 +74,12 @@ const onUpdate = functions.firestore
     const after = pick(change.after.data(), ['name', 'url', 'tags']);
 
     // check if bookmark has changed
-    console.log('checking if bookmark data has changed.');
+    functions.logger.info('checking if bookmark data has changed.');
     if (compare(before, after)) {
-      console.log('no changes, exiting.');
+      functions.logger.info('no changes, exiting.');
       return true;
     } else {
-      console.log('bookmark data changed, updating timestamp.');
+      functions.logger.info('bookmark data changed, updating timestamp.');
       return change.after.ref.update({
         updated: context.timestamp,
       });
@@ -77,33 +89,59 @@ const onUpdate = functions.firestore
 const onDelete = functions.firestore
   .document('bookmarks/{bookmarkId}')
   .onDelete(async (snapshot, context) => {
-    //
-    // const tasksClient = new CloudTasksClient.CloudTasksClient();
-    // const config = JSON.parse(process.env.FIREBASE_CONFIG);
-    // const projectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId;
-    // const location = 'us-east4';
-    // const queue = projectId;
-
     // get documents
     const bookmark = await snapshot.ref.get();
 
     // check if event already happened
     if (await isDuplicateEvent(context.eventId)) {
-      console.log('event has already occurred, exiting.');
+      functions.logger.info('event has already occurred, exiting.');
       return true;
     } else {
       // check if bookmark has been deleted
       if (!bookmark.exists) {
         // decrement user's bookmark count
-        console.log('updating user bookmark count');
+        functions.logger.info('updating user bookmark count');
         await users.doc(snapshot.data().owner).update({
           bookmarksTotal: admin.firestore.FieldValue.increment(-1),
         });
 
         // record event in case duplicate delivery
-        console.log('recording event in case of duplicate delivery.');
-        return await recordEvent(context);
+        functions.logger.info('recording event in case of duplicate delivery.');
+        await recordEvent(context);
       }
+    }
+
+    // schedule task to clean up event from history
+    if (cleanupEnabled) {
+      functions.logger.info('scheduling delete event cleanup task');
+      const tasksClient = new CloudTasksClient();
+      const queuePath = tasksClient.queuePath(
+        gcpProjectId as string,
+        gcpTasksRegion as string,
+        gcpTasksQueueName as string
+      );
+
+      const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/eventHistory-deleteEvent?eventid=${context.eventId}`;
+
+      const task = {
+        httpRequest: {
+          httpMethod: 5,
+          url,
+        },
+        scheduleTime: {
+          seconds: 90000 + Date.now() / 1000,
+        },
+      };
+
+      const request = {
+        parent: queuePath,
+        task: task,
+      };
+
+      functions.logger.log(request);
+      return tasksClient.createTask(request);
+    } else {
+      return true;
     }
   });
 
