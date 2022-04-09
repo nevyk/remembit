@@ -23,6 +23,7 @@ const cleanupEnabled =
 const gcpProjectId = process.env.REMEMBIT_GCP_PROJECT_ID;
 const gcpTasksQueueName = process.env.REMEMBIT_GCP_TASKS_QUEUE;
 const gcpTasksRegion = process.env.REMEMBIT_GCP_TASKS_REGION;
+const gcpTasksServiceAccount = process.env.REMEMBIT_GCP_TASKS_SERVICE_ACCOUNT_EMAIL;
 const firebaseProjectId = process.env.REMEMBIT_FIREBASE_PROJECT_ID;
 const firebaseFunctionRegion = process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION;
 
@@ -121,12 +122,17 @@ const onDelete = functions.firestore
         gcpTasksQueueName as string
       );
 
-      const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/eventHistory-deleteEvent?eventid=${context.eventId}`;
+      const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/eventHistory-deleteEvent`;
+      const query = `?eventid=${context.eventId}`;
 
       const task = {
         httpRequest: {
-          httpMethod: 5,
-          url,
+          httpMethod: 5, // this is the enum or 'DELETE'
+          url: `${url}${query}`,
+          oidcToken: {
+            serviceAccountEmail: gcpTasksServiceAccount,
+            audience: url,
+          },
         },
         scheduleTime: {
           seconds: 90000 + Date.now() / 1000,
@@ -138,7 +144,6 @@ const onDelete = functions.firestore
         task: task,
       };
 
-      functions.logger.log(request);
       return tasksClient.createTask(request);
     } else {
       return true;
