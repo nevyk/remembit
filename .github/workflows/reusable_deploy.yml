@@ -10,13 +10,14 @@ on:
         type: string
         required: true
     secrets:
-      FIREBASE_CONFIG:
-        required: true
       FIREBASE_PROJECT_ID:
         required: true
       FIREBASE_TOKEN:
         required: true
-
+      FIREBASE_FUNCTIONS_ENV:
+        required: true
+      REMEMBIT_ENV:
+        required: true
 jobs:
   deploy:
     name: Deploy
