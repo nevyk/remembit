@@ -34,8 +34,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install -r
 
-      - name: Update Firebase Config
-        run: echo ${{ secrets.FIREBASE_CONFIG }} | base64 -d > src/configs/firebase.json
+      - name: Update Firebase Functions envars
+        run: echo ${{ secrets.FIREBASE_FUNCTIONS_ENV }} | base64 -d > functions/.env
+
+      - name: Update Remembit envars
+        run: echo ${{ secrets.REMEMBIT_ENV }} | base64 -d > .env
 
       - name: Build
         run: pnpm run build

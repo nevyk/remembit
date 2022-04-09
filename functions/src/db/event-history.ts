@@ -12,28 +12,35 @@ try {
 const event_history = admin.firestore().collection('event_history');
 
 // functions
-const deleteEvent = functions.https.onRequest((req, res) => {
-  // only run on delete requests
-  if (req.method !== 'DELETE') {
-    console.log('wrong http method, exiting');
-    res.status(403).send("Ah Ah Ah Ah, you didn't say the magic word.");
-  } else {
-    const eventId = req.body.eventId;
-    console.log(req.body);
+const deleteEvent = functions
+  .runWith({ ingressSettings: 'ALLOW_INTERNAL_ONLY' })
+  .https.onRequest((req, res) => {
+    // only run on delete requests
+    if (req.method !== 'DELETE') {
+      functions.logger.info('wrong http method, exiting');
+      res.status(403).send("Ah Ah Ah Ah, you didn't say the magic word.");
+    } else {
+      // parse request
+      const eventId = req.query.eventid;
 
-    event_history
-      .doc(eventId)
-      .delete()
-      .then(() => {
-        console.log(`sucessfully deleted event: ${eventId}`);
-        res.status(200).send('successfully deleted event.');
-      })
-      .catch((e) => {
-        console.log(`failed to delete event: ${eventId}`);
-        console.log(e);
-        res.status(500).send('failed to delete event.');
-      });
-  }
-});
+      // delete event from history table
+      if (typeof eventId === 'string') {
+        event_history
+          .doc(eventId)
+          .delete()
+          .then(() => {
+            functions.logger.info(`sucessfully deleted event: ${eventId}`);
+            res.status(200).send('successfully deleted event.');
+          })
+          .catch((e) => {
+            functions.logger.error(`failed to delete event: ${eventId}`);
+            functions.logger.error(e);
+            res.status(500).send('failed to delete event.');
+          });
+      } else {
+        res.status(400).send('invalid eventid, must be string');
+      }
+    }
+  });
 
 export { deleteEvent };

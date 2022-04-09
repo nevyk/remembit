@@ -18,7 +18,7 @@
     "@firebase/app-compat": "0.x",
     "@google-cloud/tasks": "^2.5.0",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.18.0",
+    "firebase-functions": "^3.19.0",
     "just-compare": "^2.0.1",
     "just-is-empty": "^3.1.1",
     "just-pick": "^4.0.1"
