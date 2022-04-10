@@ -4,7 +4,8 @@ import pick from 'just-pick';
 import isEmpty from 'just-is-empty';
 //@ts-ignore
 import compare from 'just-compare';
-import { recordEvent, isDuplicateEvent } from './utils.js';
+import { recordEvent, isDuplicateEvent } from './dbutils.js';
+import { isRunningInEmulator } from '../util/util.js';
 import { CloudTasksClient } from '@google-cloud/tasks';
 
 // handle firebase admin sdk
@@ -18,8 +19,6 @@ try {
 const users = admin.firestore().collection('users');
 
 // configs
-const cleanupEnabled =
-  process.env.REMEMBIT_EVENT_CLEANUP_ENABLED === 'true' ? true : false;
 const gcpProjectId = process.env.REMEMBIT_GCP_PROJECT_ID;
 const gcpTasksQueueName = process.env.REMEMBIT_GCP_TASKS_QUEUE;
 const gcpTasksRegion = process.env.REMEMBIT_GCP_TASKS_REGION;
@@ -31,8 +30,6 @@ const firebaseFunctionRegion = process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION;
 const onCreate = functions.firestore
   .document('bookmarks/{bookmarkId}')
   .onCreate(async (snapshot, context) => {
-    functions.logger.log(process.env);
-
     // get existing data
     const bookmark = await snapshot.ref.get();
     const bookmarkData = bookmark.data();
@@ -100,11 +97,17 @@ const onDelete = functions.firestore
     } else {
       // check if bookmark has been deleted
       if (!bookmark.exists) {
-        // decrement user's bookmark count
-        functions.logger.info('updating user bookmark count');
-        await users.doc(snapshot.data().owner).update({
-          bookmarksTotal: admin.firestore.FieldValue.increment(-1),
-        });
+        try {
+          // decrement user's bookmark count
+          functions.logger.info('updating user bookmark count');
+          await users.doc(snapshot.data().owner).update({
+            bookmarksTotal: admin.firestore.FieldValue.increment(-1),
+          });
+        } catch (error: any) {
+          if (error.code !== 5) {
+            functions.logger.error(error);
+          }
+        }
 
         // record event in case duplicate delivery
         functions.logger.info('recording event in case of duplicate delivery.');
@@ -112,8 +115,8 @@ const onDelete = functions.firestore
       }
     }
 
-    // schedule task to clean up event from history
-    if (cleanupEnabled) {
+    if (!isRunningInEmulator()) {
+      // schedule task to clean up event from history
       functions.logger.info('scheduling delete event cleanup task');
       const tasksClient = new CloudTasksClient();
       const queuePath = tasksClient.queuePath(
