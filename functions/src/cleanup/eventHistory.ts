@@ -12,7 +12,7 @@ try {
 const event_history = admin.firestore().collection('event_history');
 
 // functions
-const deleteEvent = functions
+const eventHistory = functions
   .runWith({ ingressSettings: 'ALLOW_INTERNAL_ONLY' })
   .https.onRequest((req, res) => {
     // only run on delete requests
@@ -43,4 +43,4 @@ const deleteEvent = functions
     }
   });
 
-export { deleteEvent };
+export { eventHistory };
