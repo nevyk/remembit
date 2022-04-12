@@ -1,6 +1,6 @@
 import functions from 'firebase-functions';
 import admin from 'firebase-admin';
-import { CloudTasksClient } from '@google-cloud/tasks';
+import { scheduleBookmarksCleanup } from '../util/gcp-cloud-tasks.js';
 
 // handle firebase admin sdk
 try {
@@ -8,14 +8,6 @@ try {
 } catch (err) {
   /* tslint:disable:no-empty */
 }
-
-// configs
-const gcpProjectId = process.env.REMEMBIT_GCP_PROJECT_ID;
-const gcpTasksQueueName = process.env.REMEMBIT_GCP_TASKS_QUEUE;
-const gcpTasksRegion = process.env.REMEMBIT_GCP_TASKS_REGION;
-const gcpTasksServiceAccount = process.env.REMEMBIT_GCP_TASKS_SERVICE_ACCOUNT_EMAIL;
-const firebaseProjectId = process.env.REMEMBIT_FIREBASE_PROJECT_ID;
-const firebaseFunctionRegion = process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION;
 
 // db references
 const bookmarksDb = admin.firestore().collection('bookmarks');
@@ -48,43 +40,10 @@ const bookmarks = functions.https.onRequest(async (request, response) => {
 
         // schedule another run if necessary
         if (rerun) {
-          // configure CloudTasks client
-          const tasksClient = new CloudTasksClient();
-          const queuePath = tasksClient.queuePath(
-            gcpProjectId as string,
-            gcpTasksRegion as string,
-            gcpTasksQueueName as string
-          );
-
-          // create function call
-          const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/cleanup-bookmarks`;
-          const query = `?uid=${uid}`;
-
-          // create task
-          const task = {
-            httpRequest: {
-              httpMethod: 5, // this is the enum or 'DELETE'
-              url: `${url}${query}`,
-              oidcToken: {
-                serviceAccountEmail: gcpTasksServiceAccount,
-                audience: url,
-              },
-            },
-            scheduleTime: {
-              seconds: 5 + Date.now() / 1000,
-            },
-          };
-
-          // create request
-          const request = {
-            parent: queuePath,
-            task: task,
-          };
-
           // create task
           try {
             functions.logger.info(`scheduling cleanup of bookmarks for ${uid}`);
-            await tasksClient.createTask(request);
+            await scheduleBookmarksCleanup(uid);
             response.status(200).send();
           } catch (error) {
             functions.logger.error(error);
