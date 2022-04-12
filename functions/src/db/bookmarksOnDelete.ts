@@ -2,7 +2,7 @@ import functions from 'firebase-functions';
 import admin from 'firebase-admin';
 import { recordEvent, isDuplicateEvent } from './dbutils.js';
 import { isRunningInEmulator } from '../util/util.js';
-import { CloudTasksClient } from '@google-cloud/tasks';
+import { scheduleEventHistoryCleanupTask } from '../util/gcp-cloud-tasks.js';
 
 // handle firebase admin sdk
 try {
@@ -13,14 +13,6 @@ try {
 
 // db references
 const usersDb = admin.firestore().collection('users');
-
-// configs
-const gcpProjectId = process.env.REMEMBIT_GCP_PROJECT_ID;
-const gcpTasksQueueName = process.env.REMEMBIT_GCP_TASKS_QUEUE;
-const gcpTasksRegion = process.env.REMEMBIT_GCP_TASKS_REGION;
-const gcpTasksServiceAccount = process.env.REMEMBIT_GCP_TASKS_SERVICE_ACCOUNT_EMAIL;
-const firebaseProjectId = process.env.REMEMBIT_FIREBASE_PROJECT_ID;
-const firebaseFunctionRegion = process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION;
 
 const onDelete = functions.firestore
   .document('bookmarks/{bookmarkId}')
@@ -56,36 +48,7 @@ const onDelete = functions.firestore
     if (!isRunningInEmulator()) {
       // schedule task to clean up event from history
       functions.logger.info('scheduling delete event cleanup task');
-      const tasksClient = new CloudTasksClient();
-      const queuePath = tasksClient.queuePath(
-        gcpProjectId as string,
-        gcpTasksRegion as string,
-        gcpTasksQueueName as string
-      );
-
-      const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/cleanup-eventHistory`;
-      const query = `?eventid=${context.eventId}`;
-
-      const task = {
-        httpRequest: {
-          httpMethod: 5, // this is the enum or 'DELETE'
-          url: `${url}${query}`,
-          oidcToken: {
-            serviceAccountEmail: gcpTasksServiceAccount,
-            audience: url,
-          },
-        },
-        scheduleTime: {
-          seconds: 90000 + Date.now() / 1000,
-        },
-      };
-
-      const request = {
-        parent: queuePath,
-        task: task,
-      };
-
-      return tasksClient.createTask(request);
+      return scheduleEventHistoryCleanupTask(context.eventId);
     } else {
       return true;
     }
