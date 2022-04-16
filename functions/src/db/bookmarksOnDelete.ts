@@ -14,6 +14,16 @@ try {
 // db references
 const usersDb = admin.firestore().collection('users');
 
+// construct config for cloud tasks
+const cloudTasksConfig = {
+  gcpProject: process.env.REMEMBIT_GCP_PROJECT_ID as string,
+  gcpLocation: process.env.REMEMBIT_GCP_TASKS_REGION as string,
+  gcpQueue: process.env.REMEMBIT_GCP_TASKS_QUEUE as string,
+  gcpServiceAccount: process.env.REMEMBIT_GCP_TASKS_SERVICE_ACCOUNT_EMAIL as string,
+  firebaseLocation: process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION as string,
+  firebaseProject: process.env.REMEMBIT_FIREBASE_PROJECT_ID as string,
+};
+
 const onDelete = functions.firestore
   .document('bookmarks/{bookmarkId}')
   .onDelete(async (snapshot, context) => {
@@ -48,7 +58,7 @@ const onDelete = functions.firestore
     if (!isRunningInEmulator()) {
       // schedule task to clean up event from history
       functions.logger.info('scheduling delete event cleanup task');
-      return scheduleEventHistoryCleanupTask(context.eventId);
+      return scheduleEventHistoryCleanupTask(context.eventId, cloudTasksConfig);
     } else {
       return true;
     }

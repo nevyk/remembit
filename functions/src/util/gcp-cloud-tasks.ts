@@ -1,50 +1,61 @@
 import { CloudTasksClient } from '@google-cloud/tasks';
-import { string } from 'yup';
-
-// configs
-const gcpProjectId = process.env.REMEMBIT_GCP_PROJECT_ID;
-const gcpTasksQueueName = process.env.REMEMBIT_GCP_TASKS_QUEUE;
-const gcpTasksRegion = process.env.REMEMBIT_GCP_TASKS_REGION;
-const gcpTasksServiceAccount = process.env.REMEMBIT_GCP_TASKS_SERVICE_ACCOUNT_EMAIL;
-const firebaseProjectId = process.env.REMEMBIT_FIREBASE_PROJECT_ID;
-const firebaseFunctionRegion = process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION;
+import { logger } from 'firebase-functions';
+// config
+interface taskconfig {
+  gcpProject: string;
+  gcpLocation: string;
+  gcpQueue: string;
+  gcpServiceAccount: string;
+  firebaseProject: string;
+  firebaseLocation: string;
+}
 
 // configure client and queue
 const tasksClient = new CloudTasksClient();
-const queuePath = tasksClient.queuePath(
-  gcpProjectId as string,
-  gcpTasksRegion as string,
-  gcpTasksQueueName as string
-);
 
-function scheduleEventHistoryCleanupTask(eventId: string) {
-  const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/cleanup-eventHistory`;
+function scheduleEventHistoryCleanupTask(eventId: string, config: taskconfig) {
+  const url = `https://${config.firebaseLocation}-${config.firebaseProject}.cloudfunctions.net/cleanup-eventHistory`;
   const query = `?eventid=${eventId}`;
+  const parent = tasksClient.queuePath(
+    config.gcpProject,
+    config.gcpLocation,
+    config.gcpQueue
+  );
+
+  const delay = Math.round(90000 + Date.now() / 1000); // 25 hours
 
   const request = {
-    parent: queuePath,
+    parent: parent,
     task: {
       httpRequest: {
         httpMethod: 5, // this is the enum or 'DELETE'
         url: `${url}${query}`,
         oidcToken: {
-          serviceAccountEmail: gcpTasksServiceAccount,
+          serviceAccountEmail: config.gcpServiceAccount,
           audience: url,
         },
       },
       scheduleTime: {
-        seconds: 90000 + Date.now() / 1000, // keep event for 25 hours
+        seconds: delay,
       },
     },
   };
 
+  logger.info(JSON.stringify(request));
   return tasksClient.createTask(request);
 }
 
-function scheduleBookmarksCleanup(uid: string) {
+function scheduleBookmarksCleanup(uid: string, config: taskconfig) {
   // create function call
-  const url = `https://${firebaseFunctionRegion}-${firebaseProjectId}.cloudfunctions.net/cleanup-bookmarks`;
+  const url = `https://${config.firebaseLocation}-${config.firebaseProject}.cloudfunctions.net/cleanup-bookmarks`;
   const query = `?uid=${uid}`;
+  const parent = tasksClient.queuePath(
+    config.gcpProject,
+    config.gcpLocation,
+    config.gcpQueue
+  );
+
+  const delay = Math.round(5 + Date.now() / 1000);
 
   // create task
   const task = {
@@ -52,18 +63,18 @@ function scheduleBookmarksCleanup(uid: string) {
       httpMethod: 5, // this is the enum or 'DELETE'
       url: `${url}${query}`,
       oidcToken: {
-        serviceAccountEmail: gcpTasksServiceAccount,
+        serviceAccountEmail: config.gcpServiceAccount,
         audience: url,
       },
     },
     scheduleTime: {
-      seconds: 5 + Date.now() / 1000,
+      seconds: delay,
     },
   };
 
   // create request
   const request = {
-    parent: queuePath,
+    parent: parent,
     task: task,
   };
 

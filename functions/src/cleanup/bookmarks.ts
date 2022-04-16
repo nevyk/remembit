@@ -12,6 +12,16 @@ try {
 // db references
 const bookmarksDb = admin.firestore().collection('bookmarks');
 
+// construct config for cloud tasks
+const cloudTasksConfig = {
+  gcpProject: process.env.REMEMBIT_GCP_PROJECT_ID as string,
+  gcpLocation: process.env.REMEMBIT_GCP_TASKS_REGION as string,
+  gcpQueue: process.env.REMEMBIT_GCP_TASKS_QUEUE as string,
+  gcpServiceAccount: process.env.REMEMBIT_GCP_TASKS_SERVICE_ACCOUNT_EMAIL as string,
+  firebaseLocation: process.env.REMEMBIT_FIREBASE_FUNCTIONS_REGION as string,
+  firebaseProject: process.env.REMEMBIT_FIREBASE_PROJECT_ID as string,
+};
+
 const bookmarks = functions.https.onRequest(async (request, response) => {
   // only run on DELETE methods
   if (request.method !== 'DELETE') {
@@ -43,7 +53,7 @@ const bookmarks = functions.https.onRequest(async (request, response) => {
           // create task
           try {
             functions.logger.info(`scheduling cleanup of bookmarks for ${uid}`);
-            await scheduleBookmarksCleanup(uid);
+            await scheduleBookmarksCleanup(uid, cloudTasksConfig);
             response.status(200).send();
           } catch (error) {
             functions.logger.error(error);
