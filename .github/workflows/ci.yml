@@ -23,5 +23,8 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
+      - name: Unit Test Firestore Security Rules
+        run: pnpm run test:firestore:ci
+
       - name: Build
         run: pnpm run build
