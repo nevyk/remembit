@@ -26,7 +26,8 @@
     },
     "auth": {},
     "firestore": {
-      "port": "9091"
+      "port": "9091",
+      "rules": "firestore.rules"
     },
     "ui": {
       "enabled": true
