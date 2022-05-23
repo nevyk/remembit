@@ -9,8 +9,13 @@ on:
       - 'main'
 
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/ci.yml
+
   staging:
     name: Staging
+    needs: [ci]
     if: github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == 'main'
     uses: ./.github/workflows/reusable_deploy.yml
     with:
@@ -24,6 +29,7 @@ jobs:
 
   production:
     name: Production
+    needs: [ci]
     if: github.event_name == 'release'
     uses: ./.github/workflows/reusable_deploy.yml
     with:

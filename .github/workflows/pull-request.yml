@@ -1,0 +1,9 @@
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/ci.yml
