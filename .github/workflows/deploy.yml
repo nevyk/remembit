@@ -11,7 +11,7 @@ on:
 jobs:
   ci:
     name: CI
-    uses: ./.github/ci.yml
+    uses: ./.github/workflows/ci.yml
 
   staging:
     name: Staging
