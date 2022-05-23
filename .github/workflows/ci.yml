@@ -19,11 +19,34 @@ jobs:
       - name: Install Dependencies
         run: pnpm install -r
 
+      - name: Build
+        run: pnpm run build
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Lint
         run: pnpm run lint
 
-      - name: Unit Test Firestore Security Rules
-        run: pnpm run test:firestore:ci
+  unitTests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-      - name: Build
-        run: pnpm run build
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Dependencies
+        run: pnpm install -r
+
+      - name: Firestore Security Rules
+        run: pnpm run test:firestore:ci
