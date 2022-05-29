@@ -52,4 +52,9 @@ router.beforeEach((to) => {
   }
 });
 
+router.isReady().then(async () => {
+  const { registerSW } = await import('virtual:pwa-register');
+  registerSW({ immediate: true });
+});
+
 export default router;
