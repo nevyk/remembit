@@ -225,6 +225,7 @@ dist
 # Recommended template: Node.gitignore
 
 dist/
+dev-dist/
 npm-debug.log
 yarn-error.log
 
