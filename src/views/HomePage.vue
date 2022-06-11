@@ -14,14 +14,16 @@ const router = useRouter();
 
 <template>
   <ion-page>
-    <ion-header>
+    <ion-header class="ion-no-border">
       <ion-toolbar>
         <ion-title class="ion-text-center" size="large">REMEMBIT</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      🚧 This app is a WIP
-
+      <p>
+        This is a personal project for learning. The goal is a simple and cross-platform
+        bookmarking tool for those of us who use multiple browsers.
+      </p>
       <ion-button @click="router.push({ name: 'Bookmarks' })">Log In</ion-button>
     </ion-content>
   </ion-page>
