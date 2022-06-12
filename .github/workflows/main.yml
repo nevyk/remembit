@@ -16,7 +16,7 @@ jobs:
   staging:
     name: Staging
     needs: [ci]
-    if: github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == 'main'
+    if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == 'main' }}
     uses: ./.github/workflows/reusable_deploy.yml
     with:
       environment: Staging
@@ -30,7 +30,7 @@ jobs:
   production:
     name: Production
     needs: [ci]
-    if: github.event_name == 'release'
+    if: ${{ github.event_name == 'release' }}
     uses: ./.github/workflows/reusable_deploy.yml
     with:
       environment: Production
