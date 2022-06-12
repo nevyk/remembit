@@ -25,7 +25,7 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
       url: ${{ inputs.environment_url }}
-    if: ${{ contains(github.event.commits.added.*, 'functions/') || contains(github.event.commits.removed.*, 'functions/') || contains(github.event.commits.modified.*, 'functions/') }}
+    if: ${{ contains(github.event.commits.*.added.*, 'functions/') || contains(github.event.commits.*.removed.*, 'functions/') || contains(github.event.commits.*.modified.*, 'functions/') }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -85,6 +85,7 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
       url: ${{ inputs.environment_url }}
+    if: ${{ contains(github.event.commits.*.added.*, 'src/') || contains(github.event.commits.*.removed.*, 'src/') || contains(github.event.commits.*.modified.*, 'src/') }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
