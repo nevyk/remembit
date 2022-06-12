@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
+import TheReloadPrompt from './components/TheReloadPrompt.vue';
 </script>
 
 <template>
   <ion-app>
     <ion-router-outlet />
   </ion-app>
+  <the-reload-prompt></the-reload-prompt>
 </template>
 
 <style>

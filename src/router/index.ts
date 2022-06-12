@@ -52,9 +52,20 @@ router.beforeEach((to) => {
   }
 });
 
+// once the router is ready we register the service worker for PWA
 router.isReady().then(async () => {
   const { registerSW } = await import('virtual:pwa-register');
-  registerSW({ immediate: true });
+  const intervalMS = 60 * 60 * 1000; // 1h
+
+  registerSW({
+    immediate: true,
+    onRegistered(registered) {
+      registered &&
+        setInterval(() => {
+          registered.update();
+        }, intervalMS);
+    }
+  });
 });
 
 export default router;
