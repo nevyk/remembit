@@ -24,6 +24,7 @@ const router = useRouter();
         This is a personal project for learning. The goal is a simple and cross-platform
         bookmarking tool for those of us who use multiple browsers.
       </p>
+      <p>temp text to test ci/cd.</p>
       <ion-button @click="router.push({ name: 'Bookmarks' })">Log In</ion-button>
     </ion-content>
   </ion-page>
