@@ -20,7 +20,7 @@ on:
         required: true
 jobs:
   Firebase:
-    name: Firebase Functions
+    name: Firebase
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
@@ -40,6 +40,9 @@ jobs:
 
       - name: Update Remembit envars
         run: echo ${{ secrets.REMEMBIT_ENV }} | base64 -d > .env
+
+      - name: Build
+        run: pnpm run build
 
       - name: Deploy
         run: |
