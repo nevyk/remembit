@@ -10,6 +10,8 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
+  IonChip,
+  IonButtons,
   modalController
 } from '@ionic/vue';
 import { pencilOutline, trashOutline, addOutline } from 'ionicons/icons';
@@ -63,23 +65,36 @@ async function showEditBookmarkModal(id: string) {
             target="_blank"
             rel="noopener"
           >
-            <ion-label>{{ bookmark.name }}</ion-label>
-            <ion-button
-              fill="clear"
-              color="primary"
-              type="button"
-              @click.stop.prevent="showEditBookmarkModal(bookmark.id)"
-            >
-              <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
-            </ion-button>
-            <ion-button
-              fill="clear"
-              color="danger"
-              type="button"
-              @click.stop.prevent="bookmarkStore.deleteBookmark(bookmark)"
-            >
-              <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
-            </ion-button>
+            <ion-label>
+              <h2>{{ bookmark.name }}</h2>
+              <ion-chip
+                v-for="tag in bookmark.tags"
+                :key="bookmark.tags.indexOf(tag)"
+                :disabled="true"
+              >
+                <small>{{ tag }}</small>
+              </ion-chip>
+            </ion-label>
+
+            <ion-buttons>
+              <ion-button
+                fill="clear"
+                color="primary"
+                type="button"
+                @click.stop.prevent="showEditBookmarkModal(bookmark.id)"
+              >
+                <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
+              </ion-button>
+
+              <ion-button
+                fill="clear"
+                color="danger"
+                type="button"
+                @click.stop.prevent="bookmarkStore.deleteBookmark(bookmark)"
+              >
+                <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
           </ion-item>
         </ion-list>
       </ion-content>
