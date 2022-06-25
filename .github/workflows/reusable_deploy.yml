@@ -19,13 +19,12 @@ on:
       REMEMBIT_ENV:
         required: true
 jobs:
-  firebase_functions:
+  Firebase:
     name: Firebase Functions
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
       url: ${{ inputs.environment_url }}
-    if: ${{ contains(github.event.commits.*.added.*, 'functions/') || contains(github.event.commits.*.removed.*, 'functions/') || contains(github.event.commits.*.modified.*, 'functions/') }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -42,68 +41,10 @@ jobs:
       - name: Update Remembit envars
         run: echo ${{ secrets.REMEMBIT_ENV }} | base64 -d > .env
 
-      - name: Deploy Firebase Functions
+      - name: Deploy
         run: |
           pnpm exec \
             firebase \
               --project ${{ secrets.FIREBASE_PROJECT_ID }} \
               --token ${{ secrets.FIREBASE_TOKEN }} \
-            deploy \
-              --only functions
-
-  firebase_firestore:
-    name: Firebase Firestore
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
-      url: ${{ inputs.environment_url }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install Dependencies
-        run: pnpm install -r
-
-      - name: Update Remembit envars
-        run: echo ${{ secrets.REMEMBIT_ENV }} | base64 -d > .env
-
-      - name: Deploy Firebase Functions
-        run: |
-          pnpm exec \
-            firebase \
-              --project ${{ secrets.FIREBASE_PROJECT_ID }} \
-              --token ${{ secrets.FIREBASE_TOKEN }} \
-            deploy \
-              --only firestore
-
-  firebase_hosting:
-    name: Firebase Hosting
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
-      url: ${{ inputs.environment_url }}
-    if: ${{ contains(github.event.commits.*.added.*, 'src/') || contains(github.event.commits.*.removed.*, 'src/') || contains(github.event.commits.*.modified.*, 'src/') }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install Dependencies
-        run: pnpm install -r
-
-      - name: Update Remembit envars
-        run: echo ${{ secrets.REMEMBIT_ENV }} | base64 -d > .env
-
-      - name: Deploy Firebase Functions
-        run: |
-          pnpm exec \
-            firebase \
-              --project ${{ secrets.FIREBASE_PROJECT_ID }} \
-              --token ${{ secrets.FIREBASE_TOKEN }} \
-            deploy \
-              --only hosting
+            deploy
