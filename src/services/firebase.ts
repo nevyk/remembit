@@ -29,7 +29,7 @@ const db = getFirestore(remembit);
 
 // use emulators on local host
 if (location.hostname === 'localhost') {
-  connectAuthEmulator(auth, 'http://localhost:9099');
+  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
   connectFirestoreEmulator(db, 'localhost', 9091);
 }
 
