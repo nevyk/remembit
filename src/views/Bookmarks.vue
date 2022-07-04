@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TheToolbar from '../components/TheToolbar.vue';
 import {
   IonPage,
   IonItem,
@@ -8,13 +7,15 @@ import {
   IonButton,
   IonIcon,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonChip,
   IonButtons,
+  IonToolbar,
+  IonHeader,
+  IonTitle,
+  IonSearchbar,
   modalController
 } from '@ionic/vue';
-import { pencilOutline, trashOutline, addOutline } from 'ionicons/icons';
+import { pencilOutline, trashOutline, add, bookmark } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
 import BookmarksModalNew from '../components/BookmarksModalNew.vue';
 import BookmarksModalEdit from '../components/BookmarksModalEdit.vue';
@@ -53,7 +54,25 @@ async function showEditBookmarkModal(id: string) {
 
 <template>
   <ion-page id="bookmarks-page" ref="bookmarksPage">
-    <TheToolbar></TheToolbar>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Bookmarks</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button @click="showNewBookmarkModal()">
+            <ion-icon :icon="bookmark"></ion-icon>
+            <ion-icon :icon="add"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-searchbar
+          id="searchbar"
+          enterkeyhint="search"
+          inputmode="search"
+          type="search"
+        ></ion-searchbar> </ion-toolbar
+    ></ion-header>
+
     <ion-content id="main-content">
       <ion-content>
         <!-- Bookmark List -->
@@ -99,12 +118,11 @@ async function showEditBookmarkModal(id: string) {
         </ion-list>
       </ion-content>
     </ion-content>
-    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-      <ion-fab-button @click="showNewBookmarkModal()">
-        <ion-icon :icon="addOutline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
   </ion-page>
 </template>
 
-<style scoped></style>
+<style scoped>
+#searchbar {
+  --box-shadow: none;
+}
+</style>

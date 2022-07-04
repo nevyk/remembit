@@ -3,14 +3,16 @@ import { RouteRecordRaw } from 'vue-router';
 import { useUserStore } from '../store/user';
 
 // Import Views (lazy load)
-const HomePage = () => import('../views/HomePage.vue');
-const LoginPage = () => import('../views/LoginPage.vue');
-const BookmarksPage = () => import('../views/BookmarksPage.vue');
+const Tabs = () => import('../views/Tabs.vue');
+const Home = () => import('../views/Home.vue');
+const Login = () => import('../views/Login.vue');
+const Bookmarks = () => import('../views/Bookmarks.vue');
+const Profile = () => import('../views/Profile.vue');
 
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'Home',
-    component: HomePage,
+    component: Home,
     path: '/',
     meta: {
       requiresAuth: false
@@ -18,19 +20,36 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     name: 'Login',
-    component: LoginPage,
+    component: Login,
     path: '/login',
     meta: {
       requiresAuth: false
     }
   },
   {
-    name: 'Bookmarks',
-    component: BookmarksPage,
-    path: '/neocortex/bookmarks',
+    name: 'Neocortex',
+    component: Tabs,
+    path: '/neocortex/',
     meta: {
       requiresAuth: true
-    }
+    },
+    children: [
+      {
+        // default to bookmarks view
+        path: '',
+        redirect: '/neocortex/bookmarks'
+      },
+      {
+        name: 'Bookmarks',
+        component: Bookmarks,
+        path: 'bookmarks'
+      },
+      {
+        name: 'Profile',
+        component: Profile,
+        path: 'profile'
+      }
+    ]
   }
 ];
 
