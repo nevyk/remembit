@@ -1,0 +1,7 @@
+{
+  "name": "remembit",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
