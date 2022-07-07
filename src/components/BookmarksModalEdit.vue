@@ -2,16 +2,15 @@
 import {
   IonContent,
   IonButton,
-  modalController,
   IonInput,
   IonItem,
   IonLabel,
   IonTitle,
   IonToolbar,
-  IonButtons,
   IonChip,
   IonIcon,
-  IonText
+  IonText,
+  modalController
 } from '@ionic/vue';
 import { closeCircleOutline } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
@@ -85,7 +84,23 @@ async function submit() {
 
 <template>
   <ion-toolbar id="new-bookmark-toolbar">
-    <ion-title id="new-bookmark-title">Edit Bookmark</ion-title>
+    <ion-title id="new-bookmark-title" class="ion-text-center">Edit Bookmark</ion-title>
+    <ion-button
+      id="button-submit"
+      slot="end"
+      fill="clear"
+      color="primary"
+      @click="submit()"
+      >Submit</ion-button
+    >
+    <ion-button
+      id="button-cancel"
+      slot="start"
+      fill="clear"
+      color="danger"
+      @click="closeModal()"
+      >Cancel</ion-button
+    >
   </ion-toolbar>
   <ion-content class="ion-padding">
     <form id="new-bookmark-form">
@@ -148,16 +163,7 @@ async function submit() {
       </ion-chip>
     </ion-item>
   </ion-content>
-  <ion-toolbar id="footer-buttons">
-    <ion-buttons id="button-submit-container" slot="primary">
-      <ion-button id="button-submit" color="primary" @click="submit()">Submit</ion-button>
-    </ion-buttons>
-    <ion-buttons id="button-cancel-container" slot="secondary">
-      <ion-button id="button-cancel" color="danger" @click="closeModal()"
-        >Cancel</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
+  <ion-toolbar id="footer-buttons"> </ion-toolbar>
 </template>
 
 <style scoped>
