@@ -1,24 +1,21 @@
 <script setup lang="ts">
 import {
   IonPage,
-  IonItem,
   IonList,
-  IonLabel,
   IonButton,
   IonIcon,
   IonContent,
-  IonChip,
   IonButtons,
   IonToolbar,
   IonHeader,
   IonTitle,
   IonSearchbar,
-  modalController
+  IonModal
 } from '@ionic/vue';
-import { pencilOutline, trashOutline, add, bookmark } from 'ionicons/icons';
+import { add, bookmark } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
 import BookmarksModalNew from '../components/BookmarksModalNew.vue';
-import BookmarksModalEdit from '../components/BookmarksModalEdit.vue';
+import BookmarkListEntry from '../components/BookmarkListEntry.vue';
 import { ref } from 'vue';
 
 // component refs
@@ -29,26 +26,17 @@ const bookmarkStore = useBookmarks();
 bookmarkStore.initializeBookmarksListner();
 
 // new bookmark modal
-async function showNewBookmarkModal() {
-  const modal = await modalController.create({
-    component: BookmarksModalNew,
-    presentingElement: bookmarksPage.value
-  });
+const newBookmarkModalAttrs = {
+  isOpen: ref(false),
+  breakpoints: [0, 0.25, 0.5, 0.75, 1],
+  initialBreakbpoint: 0.75
+};
 
-  return modal.present();
+function showNewBookmarkModal() {
+  newBookmarkModalAttrs.isOpen.value = true;
 }
-
-// edit bookmark modal
-async function showEditBookmarkModal(id: string) {
-  const modal = await modalController.create({
-    component: BookmarksModalEdit,
-    componentProps: {
-      bookmarkId: id
-    },
-    presentingElement: bookmarksPage.value
-  });
-
-  return modal.present();
+function dismissNewBookmarkModal() {
+  newBookmarkModalAttrs.isOpen.value = false;
 }
 </script>
 
@@ -57,14 +45,14 @@ async function showEditBookmarkModal(id: string) {
     <ion-header>
       <ion-toolbar>
         <ion-title>Bookmarks</ion-title>
-      </ion-toolbar>
-      <ion-toolbar>
         <ion-buttons slot="end">
           <ion-button @click="showNewBookmarkModal()">
             <ion-icon :icon="bookmark"></ion-icon>
             <ion-icon :icon="add"></ion-icon>
           </ion-button>
         </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar collaps>
         <ion-searchbar
           id="searchbar"
           enterkeyhint="search"
@@ -73,51 +61,25 @@ async function showEditBookmarkModal(id: string) {
         ></ion-searchbar> </ion-toolbar
     ></ion-header>
 
-    <ion-content id="main-content">
-      <ion-content>
-        <!-- Bookmark List -->
-        <ion-list>
-          <ion-item
-            v-for="bookmark in bookmarkStore.bookmarks"
-            :key="bookmark.id"
-            :href="bookmark.url"
-            target="_blank"
-            rel="noopener"
-          >
-            <ion-label>
-              <h2>{{ bookmark.name }}</h2>
-              <ion-chip
-                v-for="tag in bookmark.tags"
-                :key="bookmark.tags.indexOf(tag)"
-                :disabled="true"
-              >
-                <small>{{ tag }}</small>
-              </ion-chip>
-            </ion-label>
-
-            <ion-buttons>
-              <ion-button
-                fill="clear"
-                color="primary"
-                type="button"
-                @click.stop.prevent="showEditBookmarkModal(bookmark.id)"
-              >
-                <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
-              </ion-button>
-
-              <ion-button
-                fill="clear"
-                color="danger"
-                type="button"
-                @click.stop.prevent="bookmarkStore.deleteBookmark(bookmark)"
-              >
-                <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-item>
-        </ion-list>
-      </ion-content>
+    <ion-content>
+      <!-- Bookmark List -->
+      <ion-list>
+        <!-- Bookmark Item -->
+        <BookmarkListEntry
+          v-for="bookmark in bookmarkStore.bookmarks"
+          :key="bookmark.id"
+          :bookmark-id="bookmark.id"
+        />
+      </ion-list>
     </ion-content>
+    <ion-modal
+      :is-open="newBookmarkModalAttrs.isOpen.value"
+      :breakpoints="newBookmarkModalAttrs.breakpoints"
+      :initial-breakpoint="newBookmarkModalAttrs.initialBreakbpoint"
+      @will-dismiss="dismissNewBookmarkModal()"
+    >
+      <BookmarksModalNew />
+    </ion-modal>
   </ion-page>
 </template>
 
