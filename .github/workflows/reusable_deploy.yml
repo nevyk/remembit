@@ -9,6 +9,13 @@ on:
       environment_url:
         type: string
         required: true
+      release-tag:
+        type: string
+        required: false
+      release:
+        type: boolean
+        required: false
+        default: false
     secrets:
       FIREBASE_PROJECT_ID:
         required: true
@@ -26,8 +33,15 @@ jobs:
       name: ${{ inputs.environment }}
       url: ${{ inputs.environment_url }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - name: Checkout Main
+        if: ${{ !inputs.release }}
+        uses: actions/checkout@v3
+
+      - name: Checkout Release
+        if: ${{ inputs.release }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.release-tag }}
 
       - name: Install pnpm
         run: npm install -g pnpm

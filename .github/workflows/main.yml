@@ -1,9 +1,6 @@
 name: Main
 
 on:
-  release:
-    types:
-      - published
   push:
     branches:
       - main
@@ -21,20 +18,6 @@ jobs:
     with:
       environment: Staging
       environment_url: https://stg.remembit.app
-    secrets:
-      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      REMEMBIT_ENV: ${{ secrets.REMEMBIT_ENV }}
-      FIREBASE_FUNCTIONS_ENV: ${{ secrets.FIREBASE_FUNCTIONS_ENV }}
-
-  production:
-    name: Production
-    needs: [ci]
-    if: ${{ github.event_name == 'release' }}
-    uses: ./.github/workflows/reusable_deploy.yml
-    with:
-      environment: Production
-      environment_url: https://remembit.app
     secrets:
       FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
