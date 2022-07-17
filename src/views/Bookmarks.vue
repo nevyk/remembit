@@ -12,14 +12,11 @@ import {
   IonSearchbar,
   IonModal
 } from '@ionic/vue';
-import { add, bookmark } from 'ionicons/icons';
+import { add, bookmark, bookmarks } from 'ionicons/icons';
 import { useBookmarks } from '../store/bookmarks';
 import BookmarksModalNew from '../components/BookmarksModalNew.vue';
 import BookmarkListEntry from '../components/BookmarkListEntry.vue';
-import { ref } from 'vue';
-
-// component refs
-const bookmarksPage = ref<HTMLElement>();
+import { ref, computed } from 'vue';
 
 // bookmarks store
 const bookmarkStore = useBookmarks();
@@ -38,10 +35,24 @@ function showNewBookmarkModal() {
 function dismissNewBookmarkModal() {
   newBookmarkModalAttrs.isOpen.value = false;
 }
+
+// search
+const search = ref('');
+const searchResults = computed(() => {
+  return bookmarkStore.bookmarks.filter((bookmark) => {
+    const nameLower = bookmark.name.toLowerCase();
+    const searchLower = search.value.toLowerCase();
+    const emptySearch = search.value === '' ? true : false;
+    const nameFound = nameLower.includes(searchLower) ? true : false;
+    const tagFound = bookmark.tags.includes(searchLower) ? true : false;
+
+    return emptySearch || nameFound || tagFound ? true : false;
+  });
+});
 </script>
 
 <template>
-  <ion-page id="bookmarks-page" ref="bookmarksPage">
+  <ion-page id="bookmarks-page">
     <ion-header>
       <ion-toolbar>
         <ion-title>Bookmarks</ion-title>
@@ -55,6 +66,7 @@ function dismissNewBookmarkModal() {
       <ion-toolbar collaps>
         <ion-searchbar
           id="searchbar"
+          v-model="search"
           enterkeyhint="search"
           inputmode="search"
           type="search"
@@ -66,7 +78,7 @@ function dismissNewBookmarkModal() {
       <ion-list>
         <!-- Bookmark Item -->
         <BookmarkListEntry
-          v-for="bookmark in bookmarkStore.bookmarks"
+          v-for="bookmark in searchResults"
           :key="bookmark.id"
           :bookmark-id="bookmark.id"
         />
