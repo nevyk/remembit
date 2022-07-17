@@ -4,14 +4,14 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "vite",
-    "firebase-functions-watch": "pnpm run --dir functions build -w",
-    "firebase-emulators": "firebase emulators:start",
+    "dev-functions": "pnpm run --dir functions build -w",
+    "dev-emulators": "firebase emulators:start",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue,.ts --fix src",
     "release": "semantic-release",
-    "test:firestore": "jest --forceExit --detectOpenHandles --silent",
-    "test:firestore:ci": "firebase emulators:exec --only firestore 'pnpm run test:firestore'"
+    "test": "jest --forceExit --detectOpenHandles --silent",
+    "test-ci": "firebase emulators:exec --only firestore 'pnpm run test'"
   },
   "dependencies": {
     "@capacitor/app": "1.1.1",

@@ -52,4 +52,4 @@ jobs:
         run: pnpm install -r
 
       - name: Firestore Security Rules
-        run: pnpm run test:firestore:ci
+        run: pnpm run test-ci
