@@ -12,6 +12,7 @@ const pwaOptions: VitePWAOptions = {
     name: 'Remembit',
     short_name: 'Remembit',
     description: 'Remember your bits!',
+    start_url: '/neocortex',
     theme_color: '#ffffff',
     icons: [
       {
@@ -32,11 +33,7 @@ const pwaOptions: VitePWAOptions = {
       }
     ]
   },
-  injectRegister: false,
-  minify: false,
-  workbox: undefined,
-  injectManifest: undefined,
-  includeManifestIcons: false,
+  minify: true,
   disable: false
 };
 

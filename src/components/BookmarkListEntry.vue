@@ -50,11 +50,16 @@ function dismissEditModal() {
 function deleteBookmark() {
   bookmarksStore.deleteBookmark(bookmark.value);
 }
+
+function openBookmark(url: string) {
+  window.open(url, '_blank');
+}
 </script>
 
 <template>
-  <ion-item :href="bookmark.url" target="_blank" rel="noopener" :detail="false">
-    <ion-label>
+  <!-- <ion-item :href="bookmark.url" target="_blank" rel="noopener" :detail="false"> -->
+  <ion-item button :detail="false">
+    <ion-label @click="openBookmark(bookmark.url)">
       <h2>{{ bookmark.name }}</h2>
       <ion-chip v-for="tag in bookmark.tags" :key="bookmark.tags.indexOf(tag)" disabled>
         {{ tag }}
