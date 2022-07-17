@@ -1,65 +1,3 @@
-<template>
-  <ion-item :href="bookmark.url" target="_blank" rel="noopener" :detail="false">
-    <ion-label>
-      <h2>{{ bookmark.name }}</h2>
-      <ion-chip v-for="tag in bookmark.tags" :key="bookmark.tags.indexOf(tag)" disabled>
-        {{ tag }}
-      </ion-chip>
-    </ion-label>
-
-    <ion-buttons>
-      <ion-button
-        :id="`options-menu-button-${bookmark.id}`"
-        shape="round"
-        fill="clear"
-        @click.prevent=""
-      >
-        <ion-icon :icon="ellipsisHorizontalOutline"></ion-icon>
-
-        <!-- Options Menu -->
-        <ion-popover
-          :dismiss-on-select="true"
-          :trigger="`options-menu-button-${bookmark.id}`"
-        >
-          <ion-list lines="none">
-            <ion-item button :detail="false" @click="showEditModal()">
-              <ion-icon
-                slot="start"
-                size="small"
-                color="primary"
-                :icon="pencilOutline"
-              ></ion-icon>
-              <ion-label>
-                <ion-text color="primary"> Edit </ion-text>
-              </ion-label>
-            </ion-item>
-
-            <ion-item button :detail="false">
-              <ion-icon
-                slot="start"
-                size="small"
-                color="danger"
-                :icon="trashOutline"
-              ></ion-icon>
-              <ion-label>
-                <ion-text color="danger"> Delete </ion-text>
-              </ion-label>
-            </ion-item>
-          </ion-list>
-        </ion-popover>
-      </ion-button></ion-buttons
-    >
-  </ion-item>
-  <ion-modal
-    :is-open="editModalAttrs.isOpen.value"
-    :breakpoints="editModalAttrs.breakpoints"
-    :initial-breakpoint="editModalAttrs.initialBreakbpoint"
-    @will-dismiss="dismissEditModal()"
-  >
-    <BookmarksModalEdit :bookmark-id="props.bookmarkId" />
-  </ion-modal>
-</template>
-
 <script setup lang="ts">
 import {
   IonList,
@@ -108,6 +46,72 @@ function showEditModal() {
 function dismissEditModal() {
   editModalAttrs.isOpen.value = false;
 }
+
+function deleteBookmark() {
+  bookmarksStore.deleteBookmark(bookmark.value);
+}
 </script>
+
+<template>
+  <ion-item :href="bookmark.url" target="_blank" rel="noopener" :detail="false">
+    <ion-label>
+      <h2>{{ bookmark.name }}</h2>
+      <ion-chip v-for="tag in bookmark.tags" :key="bookmark.tags.indexOf(tag)" disabled>
+        {{ tag }}
+      </ion-chip>
+    </ion-label>
+
+    <ion-buttons>
+      <ion-button
+        :id="`options-menu-button-${bookmark.id}`"
+        shape="round"
+        fill="clear"
+        @click.prevent=""
+      >
+        <ion-icon :icon="ellipsisHorizontalOutline"></ion-icon>
+
+        <!-- Options Menu -->
+        <ion-popover
+          :dismiss-on-select="true"
+          :trigger="`options-menu-button-${bookmark.id}`"
+        >
+          <ion-list lines="none">
+            <ion-item button :detail="false" @click="showEditModal()">
+              <ion-icon
+                slot="start"
+                size="small"
+                color="primary"
+                :icon="pencilOutline"
+              ></ion-icon>
+              <ion-label>
+                <ion-text color="primary"> Edit </ion-text>
+              </ion-label>
+            </ion-item>
+
+            <ion-item button :detail="false" @click="deleteBookmark()">
+              <ion-icon
+                slot="start"
+                size="small"
+                color="danger"
+                :icon="trashOutline"
+              ></ion-icon>
+              <ion-label>
+                <ion-text color="danger"> Delete </ion-text>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-popover>
+      </ion-button></ion-buttons
+    >
+  </ion-item>
+  <ion-modal
+    :is-open="editModalAttrs.isOpen.value"
+    :breakpoints="editModalAttrs.breakpoints"
+    :initial-breakpoint="editModalAttrs.initialBreakbpoint"
+    @will-dismiss="dismissEditModal()"
+  >
+    <BookmarksModalEdit :bookmark-id="props.bookmarkId" />
+  </ion-modal>
+</template>
 
 <style scoped></style>
